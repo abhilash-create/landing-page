@@ -644,6 +644,72 @@ input{border:none;outline:none}
   .hero-h1{font-size:40px;letter-spacing:-2px}
   .bento-gb{font-size:56px}
 }
+
+
+/* ═══ BROADBAND FACTS MODAL ════════════════════════════════════════════= */
+.bfm-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(15,23,42,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:16px;
+}
+.bfm-overlay.open{display:flex;animation:bfm-in .22s ease both}
+@keyframes bfm-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.bfm-sheet{
+  background:#fff;border-radius:20px;width:100%;max-width:460px;
+  max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 32px 80px rgba(0,0,0,.25),0 4px 16px rgba(0,0,0,.12);
+  animation:bfm-slide .28s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes bfm-slide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.bfm-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;
+}
+.bfm-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.bfm-close{
+  width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--surf);display:flex;align-items:center;justify-content:center;
+  font-size:20px;line-height:1;color:var(--muted);transition:background var(--t),color var(--t);
+}
+.bfm-close:hover{background:var(--bdr);color:var(--ink)}
+.bfm-body{overflow-y:auto;padding:16px 20px 24px;flex:1}
+/* esc key trap hint */
+.bfm-body .bf-label{max-width:100%}
+
+/* ═══ CTA DELIGHT ANIMATION ══════════════════════════════════════════════ */
+@keyframes particle-fly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+@keyframes cta-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37,99,235,.6); }
+  70%  { box-shadow: 0 0 0 18px rgba(37,99,235,0); }
+  100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+}
+@keyframes cta-success-in {
+  0%   { transform: scale(0.92); }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.cta-particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  animation: particle-fly 0.75s cubic-bezier(.2,.8,.3,1) forwards;
+}
+.btn-cta.is-success,
+.bento-cta.is-success {
+  background: var(--green) !important;
+  box-shadow: 0 0 0 0 rgba(16,185,129,0) !important;
+  animation: cta-success-in 0.35s ease, cta-pulse 0.7s ease 0.35s !important;
+  pointer-events: none;
+}
+.btn-cta.is-loading,
+.bento-cta.is-loading {
+  opacity: 0.85;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -662,25 +728,25 @@ input{border:none;outline:none}
     <div class="hero-left rv">
       <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Limited time offer</div>
       <h1 class="hero-h1">
-        Get More.
-        <span class="line2">Pay Less.</span>
-        <span class="line3">$20/Month.</span>
+        Switch to
+        <span class="line2">Premium Unlimited</span>
+        <span class="line3">for Just $20/mo</span>
       </h1>
-      <p class="hero-tagline">Join Nu Mobile and save $20/mo for 12 months on America&#39;s best 5G network. Keep your number, keep your phone. No contracts.</p>
+      <p class="hero-tagline">Join Nu Mobile and save $10/mo — every month. Keep your number, keep your phone. No contracts. Cancel anytime.</p>
       <div class="hero-cta-row">
-        <a href="#plans" class="btn-cta">
+        <a href="https://nu-demo-qa.managemymobile.com/lander?type=new_purchase&planID=REACH%40nu-demo%40Premium%20Unlimited&numberOfLines=1&returnUrl=https%3A%2F%2Fabhilash-create.github.io%2Flanding-page%2Flanding_b.html" class="btn-cta" onclick="ctaClick(event,'https://nu-demo-qa.managemymobile.com/lander?type=new_purchase&planID=REACH%40nu-demo%40Premium%20Unlimited&numberOfLines=1&returnUrl=https%3A%2F%2Fabhilash-create.github.io%2Flanding-page%2Flanding_b.html',this)">
           Get My $20 Plan
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <div class="hero-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          No credit card required
+          New users save $10/mo. Regular price $30/mo.
         </div>
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><div class="hs-val">99<b>%</b></div><div class="hs-lbl">US Population Coverage</div></div>
-        <div class="hero-stat"><div class="hs-val">30<b>GB</b></div><div class="hs-lbl">High-Speed Data</div></div>
-        <div class="hero-stat"><div class="hs-val"><b>$</b>240</div><div class="hs-lbl">Saved Per Year</div></div>
+        <div class="hero-stat"><div class="hs-val"><b>$</b>10</div><div class="hs-lbl">Saved Every Month</div></div>
+        <div class="hero-stat"><div class="hs-val"><b>$</b>120</div><div class="hs-lbl">Saved Per Year</div></div>
       </div>
     </div>
     <!-- Right: tall image card -->
@@ -691,7 +757,7 @@ input{border:none;outline:none}
       <div class="hero-price-badge">
         <div class="hpb-from">Switch today for just</div>
         <div class="hpb-price"><b>$20</b>/mo</div>
-        <div class="hpb-note">For the first 12 months</div>
+        <div class="hpb-note">New users save $10/mo</div>
       </div>
       <!-- Trust pill -->
       <div class="hero-trust-pill">
@@ -711,19 +777,25 @@ input{border:none;outline:none}
 <!-- TICKER STRIP -->
 <div class="ticker" aria-hidden="true">
   <div class="ticker-track">
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Contracts</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.46 19c1.32-7.34 7.37-13 14.54-13"/><path d="M5 19c.85-4.2 4.11-7.5 8-7.5"/><circle cx="12" cy="19" r="1"/></svg>Nationwide 5G</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Keep Your Number</div>
     <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 014.69 12 19.8 19.8 0 011.6 3.37 2 2 0 013.57 1h3a2 2 0 012 1.72 18.8 18.8 0 00.7 2.81 2 2 0 01-.45 2.11L7.91 8.6A16 16 0 0014.2 14.9l.91-.91a2 2 0 012.11-.45 18.8 18.8 0 002.81.7A2 2 0 0122 16.92z"/></svg>Unlimited Talk &amp; Text</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Free SIM Activation</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>99% US Coverage</div>
-    <!-- duplicate for seamless loop -->
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Contracts</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>30GB High-Speed Data</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>5GB Mobile Hotspot</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>SD Video Streaming</div>
     <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.46 19c1.32-7.34 7.37-13 14.54-13"/><path d="M5 19c.85-4.2 4.11-7.5 8-7.5"/><circle cx="12" cy="19" r="1"/></svg>Nationwide 5G</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Keep Your Number</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Zero Contracts</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Free Number Port</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Bring Your Phone</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>24/7 Support</div>
+    <!-- duplicate set for seamless loop -->
     <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 014.69 12 19.8 19.8 0 011.6 3.37 2 2 0 013.57 1h3a2 2 0 012 1.72 18.8 18.8 0 00.7 2.81 2 2 0 01-.45 2.11L7.91 8.6A16 16 0 0014.2 14.9l.91-.91a2 2 0 012.11-.45 18.8 18.8 0 002.81.7A2 2 0 0122 16.92z"/></svg>Unlimited Talk &amp; Text</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Free SIM Activation</div>
-    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>99% US Coverage</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>30GB High-Speed Data</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>5GB Mobile Hotspot</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>SD Video Streaming</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.46 19c1.32-7.34 7.37-13 14.54-13"/><path d="M5 19c.85-4.2 4.11-7.5 8-7.5"/><circle cx="12" cy="19" r="1"/></svg>Nationwide 5G</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Zero Contracts</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Free Number Port</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Bring Your Phone</div>
+    <div class="ticker-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>24/7 Support</div>
   </div>
 </div>
 
@@ -740,33 +812,19 @@ input{border:none;outline:none}
       <div class="bento-main">
         <!-- Left: price + CTA -->
         <div class="bento-main-left">
-          <div class="bento-plan-tag">Most Popular</div>
+          <div class="bento-plan-tag">Premium Unlimited</div>
           <div class="bento-gb"><span>30</span><span class="bento-gb-unit">GB</span></div>
           <div class="bento-price">
-            <div class="bento-from">Only</div>
-            <div><span class="bento-amt">$35</span><span class="bento-per">/mo</span></div>
+            <div class="bento-from">Switch today for just</div>
+            <div><span class="bento-amt">$20</span><span class="bento-per">/mo</span></div>
           </div>
-          <div class="bento-tax">Additional taxes and fees</div>
-          <button class="bento-cta" onclick="planCta(this)">Get This Plan &rarr;</button>
+          <div class="bento-tax">$30/mo regular price · Additional taxes and fees</div>
+          <button class="bento-cta" onclick="ctaClick(event,'https://nu-demo-qa.managemymobile.com/lander?type=new_purchase&planID=REACH%40nu-demo%40Premium%20Unlimited&numberOfLines=1&returnUrl=https%3A%2F%2Fabhilash-create.github.io%2Flanding-page%2Flanding_b.html',this)">Get This Plan &rarr;</button>
           <div class="bento-micro">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            No contract &middot; Cancel anytime
+            No contract &middot; Cancel anytime &middot; Free number port
           </div>
-          <div class="bento-bf" id="bfTog" onclick="toggleBF()">Broadband Facts <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
-          <div class="bf-panel" id="bfPanel"><div class="bf-inner"><div>
-            <div class="bf-label">
-              <div class="bf-hd"><div class="bf-hd-t">Broadband Facts</div><div class="bf-prov">Reach Mobile</div><div class="bf-pname">Unlimited (30GB)</div><div class="bf-ptype">Fixed or Mobile Broadband Consumer Disclosure</div></div>
-              <div class="bf-sec"><div class="bf-pr"><span class="bf-pl">Monthly Price</span><span class="bf-pv">$35.00</span></div><div class="bf-sec-n">Not an introductory rate. No contract required.</div></div>
-              <div class="bf-sec"><div class="bf-sec-t">Additional Charges &amp; Terms</div><div class="bf-sub">Provider Monthly Fees</div><div class="bf-dr bf-ind"><span class="rl">Cost Recovery Fee</span><span class="rv">6% of invoice</span></div><div class="bf-sec-n bf-ind">One-time Fees at Purchase</div><div class="bf-dr bf-ind"><span class="rl">Activation</span><span class="rv">$0.00</span></div><div class="bf-dr bf-ind"><span class="rl">SIM Shipping</span><span class="rv">$3.00&ndash;$25.00</span></div><div style="height:4px"></div><div class="bf-dr"><span class="rl" style="font-weight:700">Early Termination</span><span class="rv">$0.00</span></div><div class="bf-dr"><span class="rl" style="font-weight:700">Gov. Taxes</span><span class="rv">Varies</span></div></div>
-              <div class="bf-sec-thin"><div class="bf-dr"><span class="rl" style="font-weight:700">Discounts &amp; Bundles</span><span class="rv">N/A</span></div></div>
-              <div class="bf-sec"><div class="bf-sec-t">Speeds</div><div class="bf-sub">4G LTE</div><div class="bf-dr bf-ind"><span class="rl">Download</span><span class="rv">11&ndash;64 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Upload</span><span class="rv">1&ndash;10 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Latency</span><span class="rv">28&ndash;47 ms</span></div><div class="bf-sub">5G</div><div class="bf-dr bf-ind"><span class="rl">Download</span><span class="rv">35&ndash;158 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Upload</span><span class="rv">3&ndash;21 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Latency</span><span class="rv">24&ndash;32 ms</span></div></div>
-              <div class="bf-sec"><div class="bf-dr"><span class="rl"><strong>Data Included</strong></span><span class="rv">30GB+</span></div><div class="bf-sec-n">Additional: $5.00/0.5GB</div></div>
-              <div class="bf-sec"><div class="bf-dr"><span class="rl" style="font-weight:700">Network Mgmt</span><a href="https://nu.reachmobile.com/network-management" target="_blank" class="bf-lnk">Policy</a></div><div class="bf-dr" style="margin-top:2px"><span class="rl" style="font-weight:700">Privacy</span><a href="https://nu.reachmobile.com/privacy" target="_blank" class="bf-lnk">Policy</a></div></div>
-              <div class="bf-sec"><a href="https://nu.reachmobile.com/contact-us" target="_blank" class="bf-lnk" style="font-size:10px;font-weight:400;word-break:break-all">https://nu.reachmobile.com/contact-us</a></div>
-              <div class="bf-sec-thin"><div class="bf-sec-n">FCC Consumer Resource Center</div><a href="https://www.fcc.gov/consumers/guides/broadband-labels" target="_blank" class="bf-lnk" style="margin-top:3px;display:inline-block">Consumer Help Center</a></div>
-              <div class="bf-uid"><strong>Unique Plan Identifier:</strong><br>M0028122398KEDFEE0738C9E62</div>
-            </div>
-          </div></div></div>
+          <button class="bento-bf" id="bfTog" onclick="openBFModal()" type="button">Broadband Facts <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
         </div>
         <!-- Right: feature list -->
         <div class="bento-main-right">
@@ -1111,11 +1169,25 @@ function closeDrawer() { document.getElementById('drawer').classList.remove('ope
 
 
 /* BROADBAND */
-function toggleBF(){var p=document.getElementById('bfPanel'),t=document.getElementById('bfTog'),o=p.classList.toggle('open');t.classList.toggle('open',o)}
+function openBFModal(){
+  var m=document.getElementById('bfModal');
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){m.querySelector('.bfm-close').focus();},100);
+}
+function closeBFModal(){
+  var m=document.getElementById('bfModal');
+  m.classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('bfTog').focus();
+}
+/* Close on Escape */
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeBFModal();});
+/* legacy stub */
+function toggleBF(){}
 /* FAQ */
 function toggleFaq(q){var it=q.closest('.faq-item'),op=it.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open')});if(!op)it.classList.add('open')}
-/* PLAN CTA */
-function planCta(btn){var o=btn.textContent;btn.textContent='Redirecting...';btn.style.background='#1357D6';setTimeout(function(){btn.textContent=o;btn.style.background=''},2000)}
+/* PLAN CTA — see ctaClick() below */
 /* DEVICE NAME */
 function formatDeviceName(make,model){
   if(!make&&!model)return'';
@@ -1287,6 +1359,94 @@ async function checkCoverage(){
 
 
 
+
+/* ═══ CTA DELIGHT ANIMATION ══════════════════════════════════════════════ */
+(function(){
+  var COLORS = ['#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#F97316'];
+  var CHECKOUT = 'https://nu-demo-qa.managemymobile.com/lander?type=new_purchase&planID=REACH%40nu-demo%40Premium%20Unlimited&numberOfLines=1&returnUrl=https%3A%2F%2Fabhilash-create.github.io%2Flanding-page%2Flanding_b.html';
+
+  window.ctaClick = function(e, url, el) {
+    e.preventDefault();
+    var btn = el || e.currentTarget;
+    if (btn.classList.contains('is-loading') || btn.classList.contains('is-success')) return;
+
+    /* 1. Get click coordinates */
+    var rect = btn.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top  + rect.height / 2;
+
+    /* 2. Particle burst */
+    var count = 24;
+    for (var i = 0; i < count; i++) {
+      (function(i){
+        var angle    = (i / count) * 2 * Math.PI + (Math.random()-0.5)*0.4;
+        var dist     = 50 + Math.random() * 80;
+        var size     = 5 + Math.random() * 9;
+        var delay    = Math.random() * 80;
+        var p = document.createElement('div');
+        p.className = 'cta-particle';
+        p.style.cssText = [
+          'left:'   + (cx - size/2) + 'px',
+          'top:'    + (cy - size/2) + 'px',
+          'width:'  + size + 'px',
+          'height:' + size + 'px',
+          'background:' + COLORS[i % COLORS.length],
+          '--tx:' + (Math.cos(angle)*dist) + 'px',
+          '--ty:' + (Math.sin(angle)*dist) + 'px',
+          'animation-delay:' + delay + 'ms'
+        ].join(';');
+        document.body.appendChild(p);
+        setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, 900 + delay);
+      })(i);
+    }
+
+    /* 3. Button success state */
+    var origHTML = btn.innerHTML;
+    btn.classList.add('is-loading');
+    btn.innerHTML = '<svg style="width:16px;height:16px;margin-right:6px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>You&#39;re In!';
+
+    setTimeout(function(){
+      btn.classList.remove('is-loading');
+      btn.classList.add('is-success');
+    }, 200);
+
+    /* 4. Redirect */
+    setTimeout(function(){
+      window.location.href = url || CHECKOUT;
+    }, 200);
+  };
+})();
+
 </script>
+
+<!-- ═══ BROADBAND FACTS MODAL ════════════════════════════════════════════ -->
+<div id="bfModal" class="bfm-overlay" role="dialog" aria-modal="true" aria-label="Broadband Facts" onclick="if(event.target===this)closeBFModal()">
+  <div class="bfm-sheet">
+    <div class="bfm-header">
+      <span class="bfm-title">Broadband Facts</span>
+      <button class="bfm-close" onclick="closeBFModal()" aria-label="Close">&times;</button>
+    </div>
+    <div class="bfm-body">
+      <div class="bf-label">
+        <div class="bf-hd">
+          <div class="bf-hd-t">Broadband Facts</div>
+          <div class="bf-prov">Reach Mobile</div>
+          <div class="bf-pname">Unlimited (30GB)</div>
+          <div class="bf-ptype">Fixed or Mobile Broadband Consumer Disclosure</div>
+        </div>
+        <div class="bf-sec"><div class="bf-pr"><span class="bf-pl">Monthly Price</span><span class="bf-pv">$20.00</span></div><div class="bf-sec-n">Introductory rate for new users — first 12 months. No contract required.</div></div>
+        <div class="bf-sec"><div class="bf-sec-t">Additional Charges &amp; Terms</div><div class="bf-sub">Provider Monthly Fees</div><div class="bf-dr bf-ind"><span class="rl">Cost Recovery Fee</span><span class="rv">6% of invoice</span></div><div class="bf-sec-n bf-ind">One-time Fees at Purchase</div><div class="bf-dr bf-ind"><span class="rl">Activation</span><span class="rv">$0.00</span></div><div class="bf-dr bf-ind"><span class="rl">SIM Shipping</span><span class="rv">$3.00&ndash;$25.00</span></div><div style="height:4px"></div><div class="bf-dr"><span class="rl" style="font-weight:700">Early Termination</span><span class="rv">$0.00</span></div><div class="bf-dr"><span class="rl" style="font-weight:700">Gov. Taxes</span><span class="rv">Varies</span></div></div>
+        <div class="bf-sec-thin"><div class="bf-dr"><span class="rl" style="font-weight:700">Discounts &amp; Bundles</span><span class="rv">N/A</span></div></div>
+        <div class="bf-sec"><div class="bf-sec-t">Speeds</div><div class="bf-sub">4G LTE</div><div class="bf-dr bf-ind"><span class="rl">Download</span><span class="rv">11&ndash;64 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Upload</span><span class="rv">1&ndash;10 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Latency</span><span class="rv">28&ndash;47 ms</span></div><div class="bf-sub">5G</div><div class="bf-dr bf-ind"><span class="rl">Download</span><span class="rv">35&ndash;158 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Upload</span><span class="rv">3&ndash;21 Mbps</span></div><div class="bf-dr bf-ind"><span class="rl">Latency</span><span class="rv">24&ndash;32 ms</span></div></div>
+        <div class="bf-sec"><div class="bf-dr"><span class="rl"><strong>Data Included</strong></span><span class="rv">30GB+</span></div><div class="bf-sec-n">Additional: $5.00/0.5GB</div></div>
+        <div class="bf-sec"><div class="bf-dr"><span class="rl" style="font-weight:700">Network Mgmt</span><a href="https://nu.reachmobile.com/network-management" target="_blank" class="bf-lnk">Policy</a></div><div class="bf-dr" style="margin-top:2px"><span class="rl" style="font-weight:700">Privacy</span><a href="https://nu.reachmobile.com/privacy" target="_blank" class="bf-lnk">Policy</a></div></div>
+        <div class="bf-sec"><a href="https://nu.reachmobile.com/contact-us" target="_blank" class="bf-lnk" style="font-size:10px;font-weight:400;word-break:break-all">https://nu.reachmobile.com/contact-us</a></div>
+        <div class="bf-sec-thin"><div class="bf-sec-n">FCC Consumer Resource Center</div><a href="https://www.fcc.gov/consumers/guides/broadband-labels" target="_blank" class="bf-lnk" style="margin-top:3px;display:inline-block">Consumer Help Center</a></div>
+        <div class="bf-uid"><strong>Unique Plan Identifier:</strong><br>M0028122398KEDFEE0738C9E62</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
