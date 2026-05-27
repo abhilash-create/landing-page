@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landing Page Guardrails — Platform Standards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D0F12;--ink2:#2C2F35;--muted:#6B7280;--ghost:#9CA3AF;
+  --border:#E5E7EB;--surface:#F9FAFB;--white:#fff;
+  --green:#059669;--green-lt:#D1FAE5;--green-dk:#065F46;
+  --red:#DC2626;--red-lt:#FEE2E2;--red-dk:#991B1B;
+  --amber:#D97706;--amber-lt:#FEF3C7;--amber-dk:#92400E;
+  --blue:#2563EB;--blue-lt:#EFF6FF;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);color:var(--ink);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* LAYOUT */
+.shell{max-width:860px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+.site-header{background:var(--ink);padding:32px 0;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.08)}
+.site-header .shell{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:5px 12px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase}
+.header-badge .dot{width:6px;height:6px;border-radius:50%;background:#10B981}
+.header-title{font-size:15px;font-weight:600;color:var(--white);letter-spacing:-.2px}
+.header-sub{font-size:11px;font-family:var(--mono);color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.5px}
+
+/* TOC */
+.toc{border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin:40px 0 0;background:var(--surface)}
+.toc-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ghost);margin-bottom:12px}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.toc-list a{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;transition:color .15s}
+.toc-list a:hover{color:var(--blue)}
+.toc-list a .n{font-family:var(--mono);font-size:10px;color:var(--ghost);min-width:20px}
+
+/* SECTION */
+.section{padding:48px 0 0;border-top:1px solid var(--border);margin-top:48px}
+.section:first-of-type{margin-top:40px}
+.section-num{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ghost);margin-bottom:8px}
+.section-title{font-size:22px;font-weight:600;letter-spacing:-.5px;color:var(--ink);margin-bottom:8px}
+.section-desc{font-size:14px;color:var(--muted);max-width:600px;line-height:1.65;margin-bottom:28px}
+
+/* STATUS BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+.badge-required{background:var(--red-lt);color:var(--red-dk)}
+.badge-recommended{background:var(--amber-lt);color:var(--amber-dk)}
+.badge-fcc{background:var(--blue-lt);color:var(--blue)}
+
+/* RULE CARDS */
+.rule{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.rule-head{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:var(--white);cursor:pointer;user-select:none}
+.rule-head:hover{background:var(--surface)}
+.rule-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;margin-top:1px}
+.rule-icon.green{background:var(--green-lt);color:var(--green-dk)}
+.rule-icon.red{background:var(--red-lt);color:var(--red-dk)}
+.rule-icon.amber{background:var(--amber-lt);color:var(--amber-dk)}
+.rule-icon.blue{background:var(--blue-lt);color:var(--blue)}
+.rule-meta{flex:1}
+.rule-name{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rule-summary{font-size:13px;color:var(--muted);margin-top:3px}
+.chevron{margin-left:auto;font-size:13px;color:var(--ghost);transition:transform .2s;flex-shrink:0;padding-top:2px}
+.rule.open .chevron{transform:rotate(180deg)}
+.rule-body{display:none;border-top:1px solid var(--border)}
+.rule.open .rule-body{display:block}
+
+/* BODY SECTIONS */
+.body-section{padding:16px 20px 20px;border-bottom:1px solid var(--border)}
+.body-section:last-child{border-bottom:none}
+.body-label{font-family:var(--mono);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ghost);margin-bottom:8px}
+.why-text{font-size:13px;color:var(--ink2);line-height:1.65}
+
+/* CODE BLOCK */
+.code-block{background:var(--ink);border-radius:6px;padding:14px 16px;margin-top:8px;overflow-x:auto}
+.code-block code{font-family:var(--mono);font-size:12px;color:#A5F3FC;line-height:1.7;display:block;white-space:pre}
+.code-block code .cm{color:#6EE7B7}
+.code-block code .cv{color:#FCD34D}
+.code-block code .ck{color:#F9A8D4}
+
+/* SPEC TABLE */
+.spec-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.spec-table th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ghost);padding:6px 10px;border-bottom:1px solid var(--border);font-weight:400}
+.spec-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table td:first-child{font-weight:500;color:var(--ink);width:40%}
+.val{font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);padding:2px 7px;border-radius:3px;display:inline-block}
+
+/* PREVIEW STRIPE */
+.preview{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-top:10px;display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
+.preview-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.preview-label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.preview-note{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+.btn-do{height:56px;padding:0 40px;border-radius:50px;background:var(--blue);color:#fff;border:none;font-family:var(--sans);font-size:16px;font-weight:600;cursor:default;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.btn-dont{height:44px;padding:0 20px;border-radius:6px;background:#374151;color:#fff;border:none;font-family:var(--sans);font-size:13px;cursor:default;display:inline-flex;align-items:center}
+.do-flag{font-size:10px;font-family:var(--mono);letter-spacing:.5px;color:var(--green-dk);background:var(--green-lt);padding:2px 8px;border-radius:2px}
+.dont-flag{font-size:10px;font-family:var(--mono);letter-spacing:.5px;color:var(--red-dk);background:var(--red-lt);padding:2px 8px;border-radius:2px}
+
+/* CHECKLIST */
+.checklist{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.checklist li{font-size:13px;color:var(--ink2);display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.checklist li::before{content:'✓';font-family:var(--mono);font-size:11px;color:var(--green);font-weight:600;margin-top:2px;flex-shrink:0}
+.checklist li.warn::before{content:'!';color:var(--amber)}
+
+/* FAQ REQUIRED */
+.faq-topics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.faq-topic{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:8px 12px;font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.faq-topic .num{font-family:var(--mono);font-size:10px;color:var(--ghost)}
+
+/* BREAKPOINTS */
+.bp-list{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.bp-list li{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink2)}
+.bp{font-family:var(--mono);font-size:11px;background:var(--ink);color:#7DD3FC;padding:2px 8px;border-radius:3px;min-width:80px;text-align:center}
+
+/* FOOTER */
+.site-footer{padding:40px 0 60px;margin-top:64px;border-top:1px solid var(--border)}
+.footer-meta{font-family:var(--mono);font-size:10px;color:var(--ghost);letter-spacing:.5px}
+
+/* DIAGRAM */
+.diagram-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:4px;overflow-x:auto}
+.diagram-wrap svg{display:block;min-width:420px}
+
+@media(max-width:600px){
+  .faq-topics{grid-template-columns:1fr}
+  .preview{flex-direction:column}
+  .section-title{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="shell">
+    <div>
+      <div class="header-title">Landing Page Standards</div>
+      <div class="header-sub">Brand Guidelines &amp; Platform Requirements</div>
+    </div>
+    <div class="header-badge"><span class="dot"></span>Brand Standards · 2026</div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="toc">
+    <div class="toc-label">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#creation"><span class="n">→</span>How to create a landing page — 6-step process</a></li>
+      <li><a href="#s0"><span class="n">00</span>Hero section — headline, eyebrow, tagline, CTA note, stats</a></li>
+      <li><a href="#s1"><span class="n">01</span>Coverage check</a></li>
+      <li><a href="#s2"><span class="n">02</span>Compatibility check (BYOD / IMEI)</a></li>
+      <li><a href="#s3"><span class="n">03</span>FAQ section</a></li>
+      <li><a href="#s4"><span class="n">04</span>Plan CTA button</a></li>
+      <li><a href="#s5"><span class="n">05</span>Responsive layout</a></li>
+      <li><a href="#s6"><span class="n">06</span>Trust signals</a></li>
+      <li><a href="#s7"><span class="n">07</span>Broadband facts label (FCC)</a></li>
+      <li><a href="#s8"><span class="n">08</span>Page structure &amp; section order</a></li>
+    </ul>
+  </nav>
+
+  <!-- CREATION PROCESS -->
+  <section class="section" id="creation" style="border-top:none;margin-top:0;padding-top:40px">
+    <div class="section-num">Overview</div>
+    <h2 class="section-title">How to create a landing page</h2>
+    <p class="section-desc">Every landing page follows the same six-step process. Steps 1 and 2 are a one-time setup completed with your account team. Steps 3–6 are repeated for each new page variant.</p>
+
+    <div class="diagram-wrap">
+      <svg width="100%" viewBox="0 0 690 860" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="6-step landing page creation process: brand brief, page structure, section content, prompt generation, review and refine, download and deploy">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#73726C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Step 1 — Brand brief (purple) -->
+        <rect x="60" y="30" width="560" height="86" rx="12" fill="rgb(238,237,254)" stroke="rgb(83,74,183)" stroke-width="0.75"/>
+        <text x="88" y="56" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(83,74,183)" letter-spacing="0.5">STEP 1 — BRAND BRIEF</text>
+        <text x="88" y="76" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(60,52,137)">Collect brand guidelines from marketing</text>
+        <text x="88" y="96" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(83,74,183)">Logo · Primary &amp; accent colours · Font family · Tone of voice · Target audience</text>
+
+        <line x1="340" y1="116" x2="340" y2="148" stroke="#73726C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 2 — Page structure (teal) -->
+        <rect x="60" y="148" width="560" height="86" rx="12" fill="rgb(225,245,238)" stroke="rgb(15,110,86)" stroke-width="0.75"/>
+        <text x="88" y="174" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(15,110,86)" letter-spacing="0.5">STEP 2 — PAGE STRUCTURE</text>
+        <text x="88" y="194" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(8,80,65)">Decide which sections to include</text>
+        <text x="88" y="214" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(15,110,86)">Hero · Trust bar · Pricing · Features · BYOD · Coverage · FAQ · Footer</text>
+
+        <line x1="340" y1="234" x2="340" y2="266" stroke="#73726C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 3 — Section content (blue) -->
+        <rect x="60" y="266" width="560" height="100" rx="12" fill="rgb(230,241,251)" stroke="rgb(24,95,165)" stroke-width="0.75"/>
+        <text x="88" y="292" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(24,95,165)" letter-spacing="0.5">STEP 3 — SECTION CONTENT</text>
+        <text x="88" y="312" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(12,68,124)">Supply the copy and data for each section</text>
+        <text x="88" y="332" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(24,95,165)">Plan name &amp; price · Hero headline &amp; CTA · Feature list · FAQ items</text>
+        <text x="88" y="350" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(24,95,165)">Trust signals (reviews, badges) · Network name</text>
+
+        <line x1="340" y1="366" x2="340" y2="398" stroke="#73726C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 4 — Prompt (amber) -->
+        <rect x="60" y="398" width="560" height="100" rx="12" fill="rgb(250,238,218)" stroke="rgb(133,79,11)" stroke-width="0.75"/>
+        <text x="88" y="424" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(133,79,11)" letter-spacing="0.5">STEP 4 — GENERATE</text>
+        <text x="88" y="444" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(99,56,6)">Send all inputs to the page generator</text>
+        <text x="88" y="464" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(133,79,11)">Brand colours · Font · Tone · Sections · Plan details · Copy</text>
+        <text x="88" y="482" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(133,79,11)">Output: a single self-contained HTML file, fully responsive</text>
+
+        <line x1="340" y1="498" x2="340" y2="530" stroke="#73726C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 5 — Review (coral) -->
+        <rect x="60" y="530" width="560" height="100" rx="12" fill="rgb(250,236,231)" stroke="rgb(153,60,29)" stroke-width="0.75"/>
+        <text x="88" y="556" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(153,60,29)" letter-spacing="0.5">STEP 5 — REVIEW &amp; REFINE</text>
+        <text x="88" y="576" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(113,43,19)">Check the output against these standards</text>
+        <text x="88" y="596" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(153,60,29)">Brand colours match · Copy is accurate · All required sections present</text>
+        <text x="88" y="614" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(153,60,29)">Mobile-responsive · Interactive elements work · Broadband facts label</text>
+
+        <!-- Refine loop arrow -->
+        <path d="M620 590 Q655 590 655 480 Q655 420 620 420" fill="none" stroke="rgba(31,30,29,0.25)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="660" y="513" font-family="DM Sans,system-ui,sans-serif" font-size="10" fill="rgb(100,100,96)">refine</text>
+
+        <line x1="340" y1="630" x2="340" y2="662" stroke="#73726C" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 6 — Deploy (green) -->
+        <rect x="60" y="662" width="560" height="86" rx="12" fill="rgb(234,243,222)" stroke="rgb(59,109,17)" stroke-width="0.75"/>
+        <text x="88" y="688" font-family="DM Sans,system-ui,sans-serif" font-size="11" font-weight="600" fill="rgb(59,109,17)" letter-spacing="0.5">STEP 6 — DOWNLOAD &amp; DEPLOY</text>
+        <text x="88" y="708" font-family="DM Sans,system-ui,sans-serif" font-size="14" font-weight="600" fill="rgb(39,80,10)">Download the HTML file and hand off</text>
+        <text x="88" y="728" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(59,109,17)">Single .html file · No dependencies · Upload to any hosting platform</text>
+
+        <!-- Footer note -->
+        <rect x="60" y="780" width="560" height="54" rx="8" fill="none" stroke="rgba(31,30,29,0.12)" stroke-width="0.75" stroke-dasharray="4 3"/>
+        <text x="340" y="803" text-anchor="middle" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(100,100,96)">The page generator automates steps 3–6.</text>
+        <text x="340" y="821" text-anchor="middle" font-family="DM Sans,system-ui,sans-serif" font-size="12" fill="rgb(100,100,96)">Steps 1–2 are a one-time setup completed with your account team.</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- S0: HERO -->
+  <section class="section" id="s0">
+    <div class="section-num">00</div>
+    <h2 class="section-title">Hero section</h2>
+    <p class="section-desc">The hero is the first thing a visitor sees. Every element — eyebrow, headline, tagline, CTA note, stats — has a defined job. Weak or missing copy here is the leading cause of high bounce rates before users reach the plan card.</p>
+
+    <!-- Eyebrow / badge -->
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon amber">🏷</div>
+        <div class="rule-meta">
+          <div class="rule-name">Eyebrow / urgency badge <span class="badge badge-recommended">Recommended</span></div>
+          <div class="rule-summary">Small label above the H1 — signals urgency, offer, or brand context</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Three patterns in use across the reference pages</div>
+          <table class="spec-table">
+            <thead><tr><th>Page</th><th>Pattern</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>index.html</td><td>Orange pill badge with clock icon</td><td>"Limited time offer — ends May 31"</td></tr>
+              <tr><td>landing_b</td><td>Blue eyebrow text with decorative line</td><td>"— Limited time offer"</td></tr>
+              <tr><td>landing_c</td><td>Muted uppercase label with line</td><td>"— Mobile plans —"</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Rules</div>
+          <ul class="checklist">
+            <li>Font size: <span class="val">11–13px</span>, uppercase, letter-spacing <span class="val">≥ 1.5px</span></li>
+            <li>Urgency copy must be truthful — use a real end date or remove the date entirely</li>
+            <li>If no active offer, use a brand/context label ("America's Best Network") rather than a false urgency claim</li>
+            <li>Margin below eyebrow before H1: <span class="val">20–28px</span></li>
+            <li class="warn">Never use "Limited time offer" without a concrete end condition</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">CSS baseline (pill style from index.html)</div>
+          <div class="code-block"><code><span class="ck">.hero-badge</span> {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #FFF7E6;  <span class="cm">/* brand warm tint */</span>
+  border: 1px solid rgba(245,158,11,.22);
+  color: #B45309;
+  border-radius: 24px; padding: 5px 14px;
+  font-size: <span class="cv">13px</span>; font-weight: 600;
+  margin-bottom: <span class="cv">20px</span>;
+}</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- H1 Headline -->
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">H1</div>
+        <div class="rule-meta">
+          <div class="rule-name">Headline (H1) <span class="badge badge-required">Required</span></div>
+          <div class="rule-summary">Must include the plan price or primary value proposition — no generic taglines</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Copy rule — price or savings must be in the H1</div>
+          <table class="spec-table">
+            <thead><tr><th>Page</th><th>H1</th><th>What it conveys</th></tr></thead>
+            <tbody>
+              <tr><td>index.html</td><td>"Switch to By the Gig for Just $20/mo"</td><td>Price + action</td></tr>
+              <tr><td>landing_b</td><td>Multi-line: brand name + "Unlimited" + "$20"</td><td>Brand + plan type + price</td></tr>
+              <tr><td>landing_c</td><td>Large typographic display: brand value + price gradient line</td><td>Visual impact + price</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Typography specification</div>
+          <table class="spec-table">
+            <thead><tr><th>Property</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Font size</td><td><span class="val">clamp(28px, 4vw–8.5vw, 52px–88px)</span> depending on layout style</td></tr>
+              <tr><td>Font weight</td><td><span class="val">800–900</span> — heavy weight is mandatory for hero H1s</td></tr>
+              <tr><td>Line height</td><td><span class="val">1.0–1.15</span> for display sizes, never > 1.2</td></tr>
+              <tr><td>Letter spacing</td><td><span class="val">-1.5px to -2.5px</span> at large sizes — negative tracking is required</td></tr>
+              <tr><td>Colour</td><td>Brand ink (near-black) on light themes; white on dark themes</td></tr>
+              <tr><td>Max lines</td><td>3 lines maximum on desktop — wrap deliberately, not accidentally</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">clamp() reference values</div>
+          <div class="code-block"><code><span class="cm">/* Compact layout (index.html style) */</span>
+font-size: <span class="cv">clamp</span>(28px, 4vw, 52px);
+letter-spacing: <span class="cv">-1.5px</span>;
+
+<span class="cm">/* Editorial split layout (landing_b style) */</span>
+font-size: <span class="cv">clamp</span>(48px, 6vw, 88px);
+letter-spacing: <span class="cv">-2.5px</span>;
+
+<span class="cm">/* Centred display layout (landing_c style) */</span>
+font-size: <span class="cv">clamp</span>(56px, 8.5vw, 112px);
+letter-spacing: <span class="cv">-4px</span>;</code></div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">What is NOT allowed in the H1</div>
+          <ul class="checklist">
+            <li class="warn">Generic lines like "The best mobile plan" with no price or saving</li>
+            <li class="warn">Competitor comparisons or claims that require substantiation</li>
+            <li class="warn">More than one price point (use the plan card section for that)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tagline / subtext -->
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">¶</div>
+        <div class="rule-meta">
+          <div class="rule-name">Tagline &amp; supporting subtext <span class="badge badge-required">Required</span></div>
+          <div class="rule-summary">1–2 sentences below the H1 that expand on the value prop and reduce objections</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Layered copy structure — all three layers required</div>
+          <table class="spec-table">
+            <thead><tr><th>Layer</th><th>Purpose</th><th>Example</th><th>Font size</th></tr></thead>
+            <tbody>
+              <tr><td>Tagline (sub1)</td><td>Reinforce the savings/benefit</td><td>"Join Nu Mobile and save $10/mo — every month"</td><td><span class="val">clamp(14px, 1.4vw, 17px)</span></td></tr>
+              <tr><td>Reassurance (sub2)</td><td>Remove the biggest objection</td><td>"No contracts. Cancel anytime."</td><td><span class="val">clamp(13px, 1.2vw, 15px)</span></td></tr>
+              <tr><td>Offer note</td><td>Explain the discount mechanism</td><td>"New users get $10 off every month."</td><td><span class="val">13px</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Rules for tagline copy</div>
+          <ul class="checklist">
+            <li>Tagline max-width: <span class="val">440–480px</span> — do not let it span the full column width</li>
+            <li>Colour: muted / secondary ink — never as dark as the H1</li>
+            <li>Line height: <span class="val">1.6–1.7</span> for comfortable reading</li>
+            <li>"No contracts. Cancel anytime." or equivalent must appear in the hero — this is mandatory reassurance copy</li>
+            <li>Offer note (discount callout) appears after the CTA button, not before it</li>
+            <li class="warn">Do not stack more than 3 subtext lines — use the features section for additional selling points</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Vertical spacing between layers</div>
+          <div class="code-block"><code>.hero-sub  { margin-bottom: <span class="cv">6px</span>;  }   <span class="cm">/* tagline → reassurance */</span>
+.hero-sub2 { margin-bottom: <span class="cv">34px</span>; }   <span class="cm">/* reassurance → CTA button */</span>
+.hero-offer{ margin-top:   <span class="cv">10px</span>; }   <span class="cm">/* below CTA button */</span></code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA micro-note -->
+    <div class="rule">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon amber">✔</div>
+        <div class="rule-meta">
+          <div class="rule-name">CTA micro-note (trust line) <span class="badge badge-recommended">Recommended</span></div>
+          <div class="rule-summary">Small line beside or below the CTA button that removes the last hesitation before click</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Patterns across the reference pages</div>
+          <table class="spec-table">
+            <thead><tr><th>Page</th><th>CTA note copy</th></tr></thead>
+            <tbody>
+              <tr><td>index.html</td><td>"New users get $10 off every month." — below button</td></tr>
+              <tr><td>landing_b</td><td>Green checkmark icon + "No contract required" — inline beside button</td></tr>
+              <tr><td>landing_c</td><td>Muted text below CTA: no-contract reassurance</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Rules</div>
+          <ul class="checklist">
+            <li>Font size: <span class="val">12–13px</span>, muted/ghost colour</li>
+            <li>Content: either a discount qualifier ("$10 off applies to new users") or a trust signal ("No credit card required" / "No contract")</li>
+            <li>If a discount is shown in the hero, this note must clarify eligibility — e.g. "New users only. First 12 months."</li>
+            <li class="warn">Do not use this line to surface additional pricing — that belongs in the plan card</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="rule">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon blue">📊</div>
+        <div class="rule-meta">
+          <div class="rule-name">Stats strip <span class="badge badge-recommended">Recommended</span></div>
+          <div class="rule-summary">3 credibility numbers below the CTA — coverage %, monthly saving, annual saving</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Reference implementation (landing_b)</div>
+          <table class="spec-table">
+            <thead><tr><th>Stat</th><th>Value</th><th>Label</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>99%</td><td>US Population Coverage</td></tr>
+              <tr><td>2</td><td>$10</td><td>Saved Every Month</td></tr>
+              <tr><td>3</td><td>$120</td><td>Saved Per Year</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Design rules</div>
+          <ul class="checklist">
+            <li>Separated by 1px vertical dividers, not cards or boxes</li>
+            <li>Value font: <span class="val">32px</span>, weight <span class="val">800</span>, letter-spacing <span class="val">-1.5px</span></li>
+            <li>Label font: <span class="val">12px</span>, muted colour, margin-top <span class="val">4px</span></li>
+            <li>Top border separates stats strip from CTA area — padding-top <span class="val">28px</span></li>
+            <li>On mobile (≤ 768px): stack vertically with <span class="val">gap:20px</span>, remove dividers</li>
+            <li class="warn">Only include stats you can substantiate — coverage % must match the actual network</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">CSS pattern</div>
+          <div class="code-block"><code><span class="ck">.hero-stats</span> {
+  display: flex; gap: 0;
+  margin-top: <span class="cv">48px</span>;
+  border-top: 1px solid var(--border);
+  padding-top: <span class="cv">28px</span>;
+}
+<span class="ck">.hero-stat + .hero-stat</span> {
+  border-left: 1px solid var(--border);
+  padding-left: <span class="cv">28px</span>;
+}
+<span class="ck">.hs-val</span>  { font-size: <span class="cv">32px</span>; font-weight: 800; letter-spacing: <span class="cv">-1.5px</span>; }
+<span class="ck">.hs-lbl</span>  { font-size: <span class="cv">12px</span>; color: var(--muted); margin-top: <span class="cv">4px</span>; }
+
+<span class="ck">@media</span> (max-width: <span class="cv">768px</span>) {
+  <span class="ck">.hero-stats</span> { flex-direction: column; gap: <span class="cv">20px</span>; }
+  <span class="ck">.hero-stat + .hero-stat</span> { border-left: none; padding-left: 0; }
+}</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero layout -->
+    <div class="rule">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon blue">⬛</div>
+        <div class="rule-meta">
+          <div class="rule-name">Hero layout &amp; image <span class="badge badge-required">Required</span></div>
+          <div class="rule-summary">Three approved layouts — all require a real lifestyle image, no stock clip-art</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Approved layout patterns</div>
+          <table class="spec-table">
+            <thead><tr><th>Layout</th><th>Grid</th><th>Image treatment</th><th>Used in</th></tr></thead>
+            <tbody>
+              <tr><td>Split (left text / right image)</td><td><span class="val">55fr 45fr</span></td><td>Full-height, object-fit:cover</td><td>index.html, landing_b</td></tr>
+              <tr><td>Centred display</td><td>Single column, centred text</td><td>Illustration/phone below text</td><td>landing_c</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Floating price badge on image (landing_b pattern)</div>
+          <ul class="checklist">
+            <li>Position: <span class="val">absolute; bottom:36px; left:28px</span></li>
+            <li>Content: "Switch today for just" + large price + small "No contract" note</li>
+            <li>Background: white card with large box shadow — must contrast against the image</li>
+            <li>Price font: <span class="val">clamp(32px, 3.5vw, 44px)</span>, weight 900</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Image requirements</div>
+          <ul class="checklist">
+            <li>Lifestyle photos showing real people using phones — no abstract graphics in the hero split</li>
+            <li><span class="val">object-fit:cover; object-position:center 15%</span> — position to keep face/hands in frame</li>
+            <li>Image must have an <span class="val">alt</span> attribute with a descriptive caption</li>
+            <li class="warn">Decorative overlays (gradient, trust pill) must not obscure the subject's face</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S1: COVERAGE CHECK -->
+  <section class="section" id="s1">
+    <div class="section-num">01</div>
+    <h2 class="section-title">Coverage check</h2>
+    <p class="section-desc">Every page variant must include a real-time coverage lookup. Users need to confirm the network reaches their address before committing to a plan — it is the #1 conversion blocker in carrier switching decisions.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">📍</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required · all variants</span></div>
+          <div class="rule-summary">Address input → live API → 5G / 4G LTE band result with visual indicators</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Why it is required</div>
+          <p class="why-text">Coverage anxiety is the number-one stated reason users don't switch carriers. Showing real-time availability converts hesitation to intent. Pages that surface coverage before the CTA convert at more than twice the rate of those that don't. It also reduces post-activation churn from coverage dissatisfaction.</p>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Minimum specification</div>
+          <table class="spec-table">
+            <thead><tr><th>Element</th><th>Standard</th></tr></thead>
+            <tbody>
+              <tr><td>Input</td><td>Full US address text field, autocomplete suggestions supported</td></tr>
+              <tr><td>API</td><td><span class="val">POST /api/coverage/check</span> — token-authenticated</td></tr>
+              <tr><td>Result states</td><td>✓ 5G + 4G LTE · ~ 4G LTE only · ✗ No coverage · ! Error</td></tr>
+              <tr><td>Band indicators</td><td>Visual bars for 5G and 4G LTE with typical speed ranges shown</td></tr>
+              <tr><td>Error handling</td><td>Network timeout (15 s), address not recognised, international address</td></tr>
+              <tr><td>Placement</td><td>Between trust bar and pricing, or directly below hero CTA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Implementation reference (from index.html / landing_b)</div>
+          <div class="code-block"><code><span class="cm">// Minimum working pattern</span>
+<span class="ck">async function</span> checkCoverage() {
+  <span class="cv">await</span> ensureToken();                   <span class="cm">// refresh on every call</span>
+  <span class="ck">const</span> body = { token, addressData: { <span class="cv">type</span>:<span class="cv">'Service'</span>,
+    address1, city, state, zip, country:<span class="cv">'USA'</span> } };
+  <span class="ck">const</span> res = <span class="cv">await</span> fetch(<span class="cv">'/api/coverage/check'</span>,
+    { method:<span class="cv">'POST'</span>, headers:{<span class="cv">'Content-Type'</span>:<span class="cv">'application/json'</span>}, body });
+  <span class="cm">// render band indicators for h5g / h4g booleans in response</span>
+}</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2: BYOD -->
+  <section class="section" id="s2">
+    <div class="section-num">02</div>
+    <h2 class="section-title">Compatibility check (BYOD / IMEI)</h2>
+    <p class="section-desc">Users must be able to verify their existing phone works before purchasing a plan. BYOD capability reduces the perceived risk of switching.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">📱</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required · all variants</span></div>
+          <div class="rule-summary">15-digit IMEI input → compatibility check API → compatible / not compatible result</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Why it is required</div>
+          <p class="why-text">A BYOD check directly before the plan CTA removes the single largest objection: "I'm not sure my phone will work." Every major MVNO conversion study shows device compatibility anxiety as a top cart-abandonment cause. Platforms that mandate it see measurably higher plan activation rates.</p>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Minimum specification</div>
+          <table class="spec-table">
+            <thead><tr><th>Element</th><th>Standard</th></tr></thead>
+            <tbody>
+              <tr><td>Input</td><td>Numeric, <span class="val">maxlength="15"</span>, live character counter <span class="val">0/15</span></td></tr>
+              <tr><td>Validation</td><td>Exactly 15 digits, Luhn check recommended</td></tr>
+              <tr><td>Result</td><td>Compatible ✓ with device detail OR Not compatible with upgrade prompt</td></tr>
+              <tr><td>Placement</td><td>Inside the "Bring your own device" section, adjacent to BYOD copy</td></tr>
+              <tr><td>Section headline</td><td>Must include "bring your own device" language and unlock guidance</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Reference copy pattern (from index.html)</div>
+          <p class="why-text">"If your current phone is unlocked and compatible with our network, you can bring it along — no worrying about losing your photos, videos, or data."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3: FAQ -->
+  <section class="section" id="s3">
+    <div class="section-num">03</div>
+    <h2 class="section-title">FAQ section</h2>
+    <p class="section-desc">FAQs serve three conversion functions: pre-answer objections so users don't leave, reduce support volume, and signal transparency — critical for switching decisions.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">💬</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required · all variants</span></div>
+          <div class="rule-summary">Minimum 5 accordion Q&As — must cover the topics listed below</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Why it is required</div>
+          <p class="why-text">FAQs pre-empt the "I need to search for more info" exit that silently kills conversions. Answering "what happens if I cancel?" and "does my phone work?" on the page keeps the user in the purchase flow. Each answered FAQ also deflects inbound support tickets.</p>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Mandatory topics (must appear in every page)</div>
+          <div class="faq-topics">
+            <div class="faq-topic"><span class="num">Q1</span>What is [Brand Name]? — value prop overview</div>
+            <div class="faq-topic"><span class="num">Q2</span>How do I keep my current number? (port-in)</div>
+            <div class="faq-topic"><span class="num">Q3</span>Can I bring my own device? (BYOD + unlock guidance)</div>
+            <div class="faq-topic"><span class="num">Q4</span>eSIM support — activation time, compatible devices</div>
+            <div class="faq-topic"><span class="num">Q5</span>Contracts &amp; cancellation — zero ETF, month-to-month</div>
+          </div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Interaction requirements</div>
+          <ul class="checklist">
+            <li>Accordion style — one item open at a time</li>
+            <li>Tap / click target minimum 44px tall per row</li>
+            <li>Animated open/close (max-height or grid-template-rows transition)</li>
+            <li>Placement: above footer, below features section</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: PLAN CTA -->
+  <section class="section" id="s4">
+    <div class="section-num">04</div>
+    <h2 class="section-title">Plan CTA button</h2>
+    <p class="section-desc">The plan CTA is the single highest-leverage element on the page. It must be prominent, legible, and immediately actionable especially on mobile where 60%+ of acquisition traffic arrives.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon amber">🎯</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-recommended">Recommended · strong conversion impact</span></div>
+          <div class="rule-summary">56 px height · full-width on mobile · price in label · pill shape preferred</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Why it matters</div>
+          <p class="why-text">On mobile, sub-44 px tap targets cause misfire rates above 12%. Each misfire increases bounce probability. A full-width pill CTA with clear label copy including the price ("Get My $20 Plan") outperforms a compact button. The label must include either the price or a clear value signal — never just "Get Started".</p>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Specification</div>
+          <table class="spec-table">
+            <thead><tr><th>Property</th><th>Required value</th><th>Current in index.html</th></tr></thead>
+            <tbody>
+              <tr><td>Height</td><td><span class="val">min 56px</span></td><td><span class="val" style="color:var(--amber-dk)">52px — upgrade</span></td></tr>
+              <tr><td>Touch target</td><td><span class="val">44×44px minimum</span></td><td>Met via padding ✓</td></tr>
+              <tr><td>Font size</td><td><span class="val">16px</span></td><td>16px ✓</td></tr>
+              <tr><td>Mobile width</td><td><span class="val">width:100%</span> at ≤ 768px</td><td><span class="val" style="color:var(--amber-dk)">inline-flex only — fix</span></td></tr>
+              <tr><td>Label</td><td>Must include price or "free" signal</td><td>✓ "Get My $20 Plan"</td></tr>
+              <tr><td>Shape</td><td>Pill recommended (<span class="val">border-radius:50px</span>)</td><td>✓</td></tr>
+              <tr><td>Shadow</td><td>Subtle elevation shadow on brand colour</td><td>✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Visual comparison</div>
+          <div class="preview">
+            <div class="preview-item">
+              <div class="dont-flag">✗ avoid</div>
+              <button class="btn-dont" tabindex="-1">Get started</button>
+              <span class="preview-note">44 px, compact, no price</span>
+            </div>
+            <div class="preview-item">
+              <div class="do-flag">✓ preferred</div>
+              <button class="btn-do" tabindex="-1">Get My $20 Plan →</button>
+              <span class="preview-note">56 px, pill, price in label</span>
+            </div>
+          </div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">CSS fix for mobile full-width</div>
+          <div class="code-block"><code><span class="ck">@media</span> (max-width: <span class="cv">768px</span>) {
+  <span class="ck">.plan-btn</span> {
+    width: <span class="cv">100%</span>;         <span class="cm">/* full-width on mobile */</span>
+    height: <span class="cv">56px</span>;         <span class="cm">/* min height */</span>
+    font-size: <span class="cv">16px</span>;
+    justify-content: <span class="cv">center</span>;
+  }
+}</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5: RESPONSIVE -->
+  <section class="section" id="s5">
+    <div class="section-num">05</div>
+    <h2 class="section-title">Responsive layout</h2>
+    <p class="section-desc">All pages must function correctly across viewport widths from 320 px to 1440 px+. Mobile-first thinking is mandatory — the majority of acquisition traffic is mobile.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">📐</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required · all variants</span></div>
+          <div class="rule-summary">Viewport meta tag + breakpoint grid + clamp() typography + no horizontal overflow</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Viewport meta — mandatory</div>
+          <div class="code-block"><code>&lt;<span class="ck">meta</span> name=<span class="cv">"viewport"</span>
+      content=<span class="cv">"width=device-width, initial-scale=1.0"</span>&gt;</code></div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Breakpoint grid (from index.html)</div>
+          <ul class="bp-list">
+            <li><span class="bp">≤ 1100px</span>Hero switches to single column · feature grid → 2 col · two-col sections stack</li>
+            <li><span class="bp">≤ 768px</span>Section padding reduces · plan card full-width · trust rating text hidden</li>
+            <li><span class="bp">≤ 480px</span>Input/button height drops to 48px · hero CTA goes full-width · feat grid → 2 col compact</li>
+            <li><span class="bp">≤ 360px</span>Single column everything · minimum font sizes · nav logo shrinks to 36px</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Typography — use clamp() for headings</div>
+          <div class="code-block"><code><span class="cm">/* H1 — scales between 28 px and 52 px */</span>
+font-size: <span class="cv">clamp</span>(28px, 4vw, 52px);
+
+<span class="cm">/* H2 — scales between 22 px and 38 px */</span>
+font-size: <span class="cv">clamp</span>(22px, 3.2vw, 38px);</code></div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Checklist</div>
+          <ul class="checklist">
+            <li>No fixed-pixel widths on images — use <span class="val">max-width:100%</span></li>
+            <li>Overflow-x hidden on body</li>
+            <li>Coverage and BYOD inputs stack vertically at ≤ 480 px</li>
+            <li>FAQ accordion tap target ≥ 44 px tall</li>
+            <li>All form inputs minimum 48 px height at ≤ 480 px</li>
+            <li class="warn">Do not use <span class="val">position:fixed</span> for non-nav elements on mobile</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6: TRUST SIGNALS -->
+  <section class="section" id="s6">
+    <div class="section-num">06</div>
+    <h2 class="section-title">Trust signals</h2>
+    <p class="section-desc">Social proof must appear above the fold, immediately after the hero. Real ratings from a named source only — no fabricated star counts or review numbers.</p>
+
+    <div class="rule">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">⭐</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required · all variants</span></div>
+          <div class="rule-summary">Verified rating source + star display + review count + "Excellent" label</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Standard pattern (from index.html &amp; landing_b)</div>
+          <ul class="checklist">
+            <li>Rating source must be named — Trustpilot preferred</li>
+            <li>Display numeric rating e.g. "4.5 out of 5 stars"</li>
+            <li>Include review count e.g. "based on 12,626 reviews"</li>
+            <li>Visual star row with half-star support</li>
+            <li>Placement: sticky trust bar below nav OR trust pill on hero image</li>
+            <li class="warn">No placeholder copy — if live rating unavailable, do not display the bar</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7: BROADBAND FACTS -->
+  <section class="section" id="s7">
+    <div class="section-num">07</div>
+    <h2 class="section-title">Broadband facts label (FCC)</h2>
+    <p class="section-desc">A consumer-facing broadband disclosure is legally required. It must be accessible from the plan card via a clearly labelled link or toggle.</p>
+
+    <div class="rule">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon blue">📄</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-fcc">FCC Compliance</span></div>
+          <div class="rule-summary">FCC-formatted label accessible from the plan card — all pricing information must match</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Required label fields</div>
+          <ul class="checklist">
+            <li>Monthly price (must match plan card)</li>
+            <li>Additional charges: cost recovery fee, activation fee, SIM shipping</li>
+            <li>Early termination fee (must state $0.00 if no contract)</li>
+            <li>Government taxes — "Varies by location"</li>
+            <li>Speeds: 4G LTE and 5G download, upload, latency</li>
+            <li>Data included + overage rate e.g. "$5.00/0.5GB"</li>
+            <li>Network management policy link</li>
+            <li>Privacy policy link</li>
+            <li>Contact URL</li>
+            <li>Unique Plan Identifier</li>
+            <li>FCC Consumer Help Center link</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Placement</div>
+          <p class="why-text">Accessible as either (a) an inline expand/collapse toggle below the plan CTA button, or (b) a modal opened from a "Broadband Facts" link. The label must be visually distinct — black border, monospace-style layout as per FCC guidelines.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S8: PAGE STRUCTURE -->
+  <section class="section" id="s8">
+    <div class="section-num">08</div>
+    <h2 class="section-title">Page structure &amp; section order</h2>
+    <p class="section-desc">All pages must follow this section order. This structure reflects the proven conversion flow used across all brand variants.</p>
+
+    <div class="rule open">
+      <div class="rule-head" onclick="toggle(this)">
+        <div class="rule-icon green">🏗</div>
+        <div class="rule-meta">
+          <div class="rule-name"><span class="badge badge-required">Required structure</span></div>
+          <div class="rule-summary">Nav → Hero → Trust bar → Pricing → Features → BYOD → Network/Coverage → FAQ → Footer</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="rule-body">
+        <div class="body-section">
+          <div class="body-label">Section order with requirements</div>
+          <table class="spec-table">
+            <thead><tr><th>#</th><th>Section</th><th>Required content</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Nav</td><td>Logo only. Sticky. No outbound links or competitor distractions.</td></tr>
+              <tr><td>2</td><td>Hero</td><td>Headline + plan price + primary CTA above the fold. Urgency badge optional.</td></tr>
+              <tr><td>3</td><td>Trust bar</td><td>Rating, star display, review count, source name. See §06.</td></tr>
+              <tr><td>4</td><td>Pricing</td><td>Plan card: data, price, features, CTA, Broadband Facts. See §04 + §07.</td></tr>
+              <tr><td>5</td><td>Features</td><td>3–4 feature cards covering network, talk/text, contract-free, support.</td></tr>
+              <tr><td>6</td><td>BYOD (Compatibility)</td><td>IMEI input + result. See §02.</td></tr>
+              <tr><td>7</td><td>Coverage check</td><td>Address input + 5G/4G band result. See §01.</td></tr>
+              <tr><td>8</td><td>FAQ</td><td>Min 5 accordions. See §03.</td></tr>
+              <tr><td>9</td><td>Footer</td><td>Logo + copyright + privacy + network management + contact links.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Nav and hero rules</div>
+          <ul class="checklist">
+            <li>Nav contains brand logo only — no navigation links that pull users away from the funnel</li>
+            <li>Sticky nav (<span class="val">position:sticky;top:0</span>) with subtle bottom border</li>
+            <li>Hero headline must include the plan price (e.g. "Switch for Just $20/mo")</li>
+            <li>"No contracts. Cancel anytime." must appear within the hero section</li>
+            <li>Scroll-reveal animations allowed but must not delay CTA visibility by more than 300ms</li>
+          </ul>
+        </div>
+        <div class="body-section">
+          <div class="body-label">Footer must include</div>
+          <ul class="checklist">
+            <li>Brand logo</li>
+            <li>Copyright line e.g. "Copyright © 2026 [Brand]"</li>
+            <li>Link to Privacy Policy</li>
+            <li>Link to Network Management Policy</li>
+            <li>Contact / support link</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-meta">LANDING PAGE STANDARDS · BRAND GUIDELINES &amp; PLATFORM REQUIREMENTS<br>
+    For questions about these standards, contact your account team.</div>
+  </footer>
+
+</div><!-- /shell -->
+
+<script>
+function toggle(head) {
+  const rule = head.closest('.rule');
+  rule.classList.toggle('open');
+}
+</script>
+</body>
+</html>
